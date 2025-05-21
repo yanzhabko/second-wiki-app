@@ -1,27 +1,30 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional
-from bson import ObjectId
+from pydantic import BaseModel, EmailStr
+from typing import Optional, List
 
-# Спеціальний тип для ObjectId
-class PyObjectId(ObjectId):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid ObjectId")
-        return ObjectId(v)
-
-# Pydantic модель користувача
 class User(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id")
+    email: EmailStr
     username: str
     hashed_password: str
-    role: str = "User"
-    bookings: List[PyObjectId] = []
+    role: "User"
 
-    class Config:
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
+class Transport:
+    type: str
+    model: str
+    price: Optional[int]
+    speed: str
+    forecastle: str
+    trunk_capacity: str
+    description: str
+    tag: List[str]
+
+class Things: 
+    type: str
+    name: str
+    description: str
+    tag: List[str]
+
+class Accesories:
+    type: str
+    name: str
+    description: str
+    tag: List[str]

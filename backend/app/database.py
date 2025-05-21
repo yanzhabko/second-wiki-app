@@ -1,9 +1,7 @@
-from pymongo import MongoClient
 
-DATABASE_URL = "mongodb://localhost:27017/"
-client = MongoClient(DATABASE_URL, serverSelectionTimeoutMS=5000)
-db = client["wiki"] 
+from pymongo.mongo_client import MongoClient
 
-# 🔌 Колекція користувачів
-def get_user_collection():
-    return db["users"]
+client = MongoClient("mongodb+srv://zhabkoyan:NRXv0HSaWdmgD21a@cluster0.svpwyag.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&tls=true") 
+
+
+db = client.second_wiki_db

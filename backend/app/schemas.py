@@ -1,26 +1,98 @@
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, List
+from datetime import datetime
 from bson import ObjectId
+from app.utils.pyobject import PyObjectId 
 
-class PyObjectId(ObjectId):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-    @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid ObjectId")
-        return ObjectId(v)
-
-class UserCreate(BaseModel):
+# ----- User Schemas -----
+class UserBase(BaseModel):
     username: str
+    email: EmailStr
+    role: str = "User"
+
+class UserCreate(UserBase):
     password: str
+    role: str = "User"
 
-class UserResponse(BaseModel):
+class UserUpdate(BaseModel):
+    name: Optional[str]
+    email: Optional[EmailStr]
+    reset_password_token: Optional[str] = None
+    reset_password_token_expiry: Optional[datetime] = None
+    email_verified: Optional[bool] = None
+    email_verification_token: Optional[str] = None
+
+class ChangePasswordRequest(BaseModel):
+    email: Optional[EmailStr]
+    old_password: str
+    new_password: str
+
+class UserResponse(UserBase):
     id: Optional[PyObjectId] = Field(alias="_id")
-    username: str
-    role: str
+    hashed_password: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    reset_password_token: Optional[str] = None
+    reset_password_token_expiry: Optional[datetime] = None
+    email_verified: bool = False
+    email_verification_token: Optional[str] = None
 
     class Config:
-        allow_population_by_field_name = True
+        validate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+
+# ----- Transport Schemas -----
+class TransportBase(BaseModel):
+    type: str
+    model: str
+    price: Optional[int]
+    speed: str
+    forecastle: str
+    trunk_capacity: str
+    description: str
+    tag: List[str]
+
+class TransportCreate(TransportBase):
+    pass
+
+class TransportResponse(TransportBase):
+    id: Optional[PyObjectId] = Field(alias="_id")
+
+    class Config:
+        validate_by_name = True
+        json_encoders = {ObjectId: str}
+
+# ----- Thing Schemas -----
+class ThingBase(BaseModel):
+    type: str
+    name: str
+    description: str
+    tag: List[str]
+
+class ThingCreate(ThingBase):
+    pass
+
+class ThingResponse(ThingBase):
+    id: Optional[PyObjectId] = Field(alias="_id")
+
+    class Config:
+        validate_by_name = True
+        json_encoders = {ObjectId: str}
+
+# ----- Accessory Schemas -----
+class AccessoryBase(BaseModel):
+    type: str
+    name: str
+    description: str
+    tag: List[str]
+
+class AccessoryCreate(AccessoryBase):
+    pass
+
+class AccessoryResponse(AccessoryBase):
+    id: Optional[PyObjectId] = Field(alias="_id")
+
+    class Config:
+        validate_by_name = True
         json_encoders = {ObjectId: str}
