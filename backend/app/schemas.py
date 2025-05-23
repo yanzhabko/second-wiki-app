@@ -64,36 +64,20 @@ class TransportResponse(TransportBase):
         json_encoders = {ObjectId: str}
 
 # ----- Thing Schemas -----
-class ClothesBase(BaseModel):
+class ThingBase(BaseModel):
     type: str
-    name: str
+    name: Optional[str]
     description: str
     tag: List[str]
     image_id: Optional[str]
 
-class ClothesCreate(ClothesBase):
+class ThingCreate(ThingBase):
     pass
 
-class ClothesResponse(ClothesBase):
+class ThingResponse(ThingBase):
     id: Optional[PyObjectId] = Field(alias="_id")
 
     class Config:
         validate_by_name = True
         json_encoders = {ObjectId: str}
 
-# ----- Accessory Schemas -----
-class AccessoryBase(BaseModel):
-    type: str
-    name: str
-    description: str
-    tag: List[str]
-
-class AccessoryCreate(AccessoryBase):
-    pass
-
-class AccessoryResponse(AccessoryBase):
-    id: Optional[PyObjectId] = Field(alias="_id")
-
-    class Config:
-        validate_by_name = True
-        json_encoders = {ObjectId: str}

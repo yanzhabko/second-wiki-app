@@ -18,7 +18,7 @@ export const useImage = (imageId: string | undefined) => {
     let url: string | null = null;
 
     api
-      .get(`/clothes/image/${imageId}`, { responseType: "blob" })
+      .get(`/image/${imageId}`, { responseType: "blob" })
       .then((res) => {
         url = URL.createObjectURL(res.data);
         setImageUrl(url);

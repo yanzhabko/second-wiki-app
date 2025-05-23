@@ -81,7 +81,7 @@ const DynamicCreateModal: React.FC<DynamicCreateModalProps> = ({
       (field) => field.required && !formData[field.name]
     );
     if (missingRequired || (withImage && !image)) {
-      alert("Будь ласка, заповніть усі обов’язкові поля.");
+      toast.error("Будь ласка, заповніть усі обов’язкові поля.");
       return;
     }
 

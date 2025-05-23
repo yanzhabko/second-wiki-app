@@ -1,14 +1,10 @@
 from typing import List
-from app.schemas import TransportResponse, ClothesResponse, AccessoryResponse
-
+from app.schemas import TransportResponse, ThingResponse
 
 def get_transport_list(cursor) -> List[TransportResponse]:
     return [TransportResponse(**doc) for doc in cursor]
 
-def get_accessories_list(cursor) -> List[AccessoryResponse]:
-    return [AccessoryResponse(**doc) for doc in cursor]
-
-def get_clothes_list(cursor):
+def get_things_list(cursor) -> List[ThingResponse]:
     results = []
     for doc in cursor:
         results.append({
@@ -20,3 +16,4 @@ def get_clothes_list(cursor):
             "image_id": str(doc.get("image_id")) if doc.get("image_id") else None
         })
     return results
+

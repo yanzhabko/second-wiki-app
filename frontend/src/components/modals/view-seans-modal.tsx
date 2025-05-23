@@ -12,7 +12,7 @@ type ViewSessionModalProps = ModalProps & {
   data: {
     id: string;
     type: string;
-    name: string;
+    name?: string;
     description: string;
     tag: string[];
     image_id: string;
@@ -55,7 +55,7 @@ const ViewSessionModal: FC<ViewSessionModalProps> = ({
               as="h3"
               className="text-lg font-semibold text-black mb-4"
             >
-              {data.type + " " + data.name}
+              {data.type + " " + (data.name ?? "")}
             </DialogTitle>
 
             <div className="w-full h-[440px] mb-4 rounded-lg overflow-hidden">

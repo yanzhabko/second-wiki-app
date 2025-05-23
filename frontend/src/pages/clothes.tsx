@@ -107,22 +107,26 @@ const Clothes = () => {
           ))}
         </div>
 
-        <div className="flex flex-wrap  gap-2 sm:gap-4">
-          {filteredClothes?.map((item, index) => (
-            <div
-              key={index}
-              onClick={() => openModal(index)}
-              className="w-full md:w-1/3 lg:w-1/4 cursor-pointer"
-            >
-              <Card
-                title={item.name}
-                description={item.description}
-                tag={item.tag}
-                imageId={item.image_id}
-                type={item.type}
-              />
-            </div>
-          ))}
+        <div className="flex flex-wrap gap-2 sm:gap-4">
+          {filteredClothes?.length === 0 ? (
+            <div className="text-gray-600">Нічого не знайдено</div>
+          ) : (
+            filteredClothes?.map((item, index) => (
+              <div
+                key={index}
+                onClick={() => openModal(index)}
+                className="w-full md:w-1/3 lg:w-1/4 cursor-pointer"
+              >
+                <Card
+                  title={item.name}
+                  description={item.description}
+                  tag={item.tag}
+                  imageId={item.image_id}
+                  type={item.type}
+                />
+              </div>
+            ))
+          )}
         </div>
       </section>
 
