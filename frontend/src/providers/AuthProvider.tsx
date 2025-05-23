@@ -8,6 +8,7 @@ import type { PropsWithChildren } from "react";
 export interface AuthContextProps {
   role: string;
   username: string;
+  createdAt?: string;
 }
 
 interface ApiError {
@@ -40,6 +41,10 @@ const getInitialState = () => {
   const decodedToken = parseJwt(token);
   const username = decodedToken?.sub;
   const role = decodedToken?.role || "User";
+  const createdAt =
+    decodedToken?.createdAt || decodedToken?.iat
+      ? new Date(decodedToken.iat * 1000).toISOString()
+      : undefined;
 
   if (!username || !role) {
     return null;
@@ -48,6 +53,7 @@ const getInitialState = () => {
   return {
     role,
     username,
+    createdAt,
   };
 };
 
@@ -89,10 +95,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
         username: decodedToken?.sub || username,
       });
 
-      setAuth({
-        role: data.role,
-        username: username,
-      });
+      // setAuth({
+      //   role: data.role,
+      //   username: username,
+      // });
       toast.success("Ви успішно увійшли!.");
       if (data.user_role === "admin") {
         navigate("/");
@@ -118,11 +124,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
     try {
       await api.post("/auth/register", {
         username,
+        email: username,
         password,
+        role: "User",
       });
 
       toast.success("Реєстрація успішна! Будь ласка, увійдіть.");
-      navigate("/singin");
+      navigate("/signin");
     } catch (err: unknown) {
       const error = err as ApiError;
 

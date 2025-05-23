@@ -62,7 +62,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
 
 
 def get_current_admin(current_user: dict = Depends(get_current_user)) -> dict:
-    if current_user.get("role") != "Admin":
+    if current_user.get("role") != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
     return current_user
 

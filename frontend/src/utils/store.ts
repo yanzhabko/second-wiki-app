@@ -2,7 +2,7 @@ import axios from "axios";
 import { trimQuotes } from "./trim-quotes";
 
 export const authApi = axios.create({
-  baseURL: "https://film-booking-app.onrender.com",
+  baseURL: "http://localhost:8000",
 });
 
 authApi.interceptors.request.use(

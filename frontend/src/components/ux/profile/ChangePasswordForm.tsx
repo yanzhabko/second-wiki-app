@@ -1,10 +1,10 @@
 import { useState } from "react";
 import type { FC } from "react";
 
-import Input from "../../Input";
+import Input from "../Input";
 import toast from "react-hot-toast";
-import Title from "../../Title";
-import { api } from "../../../../utils/server";
+import Title from "../Title";
+import { api } from "../../../utils/server";
 import type { AxiosError } from "axios";
 
 const ChangePasswordForm: FC = () => {
@@ -13,10 +13,18 @@ const ChangePasswordForm: FC = () => {
     new_password: "",
     confirmed_password: "",
   });
+
   const [loading, setLoading] = useState(false);
 
   const changePassword = async (oldPassword: string, newPassword: string) => {
     try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        toast.error("Користувач не авторизований");
+        throw new Error("Користувач не авторизований");
+      }
+
       const { data } = await api.put(
         "/profile/change-password",
         {
@@ -26,6 +34,7 @@ const ChangePasswordForm: FC = () => {
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -119,11 +128,11 @@ const ChangePasswordForm: FC = () => {
         />
         <button
           type="submit"
-          className=" px-4 py-2 cursor-pointer text-center w-auto text-2 lg:text-3 lg:px-5 lg:py-1 xl:px-10 rounded-lg text-white font-semibold bg-purple-400 hover:bg-purple-500"
+          disabled={loading}
+          className="px-4 py-2 cursor-pointer text-center w-auto text-2 lg:text-3 lg:px-5 lg:py-1 xl:px-10 rounded-lg text-white font-semibold bg-purple-400 hover:bg-purple-500 disabled:opacity-50"
         >
           Зберегти
         </button>
-        {/* <Button title="Зберегти" types="login" /> */}
       </form>
     </div>
   );

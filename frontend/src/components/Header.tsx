@@ -4,10 +4,12 @@ import { NavLink } from "react-router-dom";
 import Title from "./ux/Title";
 import Burger from "./ux/header/Burger";
 import LaptopNav from "./ux/header/LaptopNav";
+import { useAuth } from "../providers/AuthProvider";
 
 const Header: FC = () => {
   const [open, setOpen] = useState(false);
   const [isProfile, setProfile] = useState(false);
+  const { user } = useAuth();
 
   const handleOpen = () => {
     setOpen(!open);
@@ -32,9 +34,11 @@ const Header: FC = () => {
           <Title title="Second" type="title" className="!text-purple-300" />
           <Title title="Life" type="title" className="!text-purple-300" />
           <Title
-            title="Wiki"
+            title={user?.role == "admin" ? "Admin" : "Wiki"}
             type="title"
-            className="absolute right-[-18px] top-[-14px] !text-[14px]"
+            className={`${
+              user?.role == "admin" ? "text-red-500" : "text-black"
+            } absolute right-[-20px] top-[-11px] !text-[14px]`}
           />
         </NavLink>
 

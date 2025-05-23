@@ -1,26 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.database import db
-from app.schemas import ChangePasswordRequest, UserResponse
-from passlib.context import CryptContext
+from app.schemas import ChangePasswordRequest
+from app.routers.auth import get_current_user, verify_password, get_password_hash
 from datetime import datetime
 
-
 router = APIRouter(prefix="/profile", tags=["profile"])
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
 
 @router.put("/change-password", status_code=status.HTTP_200_OK)
 def change_password(
     data: ChangePasswordRequest,
-    current_user: UserResponse = Depends(),
+    current_user: dict = Depends(get_current_user)
 ):
-    user = db.user.find_one({"_id": current_user.id})
+    user = db.users.find_one({"email": current_user["email"]})
     if not user:
         raise HTTPException(status_code=404, detail="Користувача не знайдено")
 
@@ -29,8 +20,8 @@ def change_password(
 
     new_hashed_password = get_password_hash(data.new_password)
 
-    result = db.user.update_one(
-        {"_id": current_user.id},
+    result = db.users.update_one(
+        {"_id": user["_id"]},
         {
             "$set": {
                 "hashed_password": new_hashed_password,

@@ -19,7 +19,7 @@ html {
     background-color: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: rgb(249, 115, 22);
+    background-color: rgb(151, 18, 166);
     border-radius: 12px;
   }
 }

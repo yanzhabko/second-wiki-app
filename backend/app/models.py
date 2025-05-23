@@ -17,7 +17,7 @@ class Transport:
     description: str
     tag: List[str]
 
-class Things: 
+class Clothes: 
     type: str
     name: str
     description: str

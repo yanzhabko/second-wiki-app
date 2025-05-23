@@ -1,9 +1,10 @@
-import Navbar from "../components/ux/profile/Navbar";
+import UpdateSection from "../components/ux/profile/UpdateSection";
 
 const Profile = () => {
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
+      <UpdateSection />
     </>
   );
 };

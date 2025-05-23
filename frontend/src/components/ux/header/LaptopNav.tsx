@@ -17,33 +17,27 @@ const LaptopNav: FC<LaptopNavProps> = ({ onClose, onOpen, isActive }) => {
 
   return (
     <>
+      <nav className="hidden gap-8 lg:flex z-10">
+        {navLinks.map((item, index) => (
+          <NavLink
+            key={index}
+            to={item.href}
+            className={({ isActive }) =>
+              `${
+                isActive ||
+                (location.pathname.startsWith(item.href) && item.href !== "/")
+                  ? "relative before:absolute before:w-full before:h-0.5 before:top-full before:bg-purple-500"
+                  : ""
+              } transition-all duration-200 hover:text-purple-500 relative hover:before:absolute hover:before:w-full hover:before:h-0.5 hover:before:top-full hover:before:bg-purple-500`
+            }
+            onClick={onClose}
+          >
+            <Title title={item.title} type="subtitle" />
+          </NavLink>
+        ))}
+      </nav>
       {user ? (
         <>
-          <nav className="hidden gap-8 lg:flex z-10">
-            {navLinks.map((item, index) => (
-              <NavLink
-                key={index}
-                to={
-                  !(item.href === "/buyers" || item.href === "/dealership")
-                    ? item.href
-                    : "#"
-                }
-                className={({ isActive }) =>
-                  `${
-                    isActive ||
-                    (location.pathname.startsWith(item.href) &&
-                      item.href !== "/")
-                      ? "relative before:absolute before:w-full before:h-0.5 before:top-full before:bg-purple-500"
-                      : ""
-                  } transition-all duration-200 hover:text-purple-500 relative hover:before:absolute hover:before:w-full hover:before:h-0.5 hover:before:top-full hover:before:bg-purple-500`
-                }
-                onClick={onClose}
-              >
-                <Title title={item.title} type="subtitle" />
-              </NavLink>
-            ))}
-          </nav>
-
           <div className="relative hidden lg:flex">
             <Button
               types="login"
@@ -86,7 +80,6 @@ const LaptopNav: FC<LaptopNavProps> = ({ onClose, onOpen, isActive }) => {
       ) : (
         <div className="gap-4 hidden lg:flex">
           <Button types="link" title="Увійти" href="/signin" />
-          <Button types="link" title="Регістрація" href="/signup" />
         </div>
       )}
     </>

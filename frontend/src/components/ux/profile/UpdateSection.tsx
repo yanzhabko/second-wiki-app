@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import ChangePasswordForm from "./update/ChangePasswordForm";
+import ChangePasswordForm from "./ChangePasswordForm";
 // import UpdateUserForm from "./UpdateUserForm";
 
 const UpdateSection: FC = () => {

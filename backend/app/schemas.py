@@ -22,8 +22,8 @@ class UserUpdate(BaseModel):
     email_verified: Optional[bool] = None
     email_verification_token: Optional[str] = None
 
+
 class ChangePasswordRequest(BaseModel):
-    email: Optional[EmailStr]
     old_password: str
     new_password: str
 
@@ -36,7 +36,7 @@ class UserResponse(UserBase):
     reset_password_token_expiry: Optional[datetime] = None
     email_verified: bool = False
     email_verification_token: Optional[str] = None
-
+    
     class Config:
         validate_by_name = True
         arbitrary_types_allowed = True
@@ -64,16 +64,17 @@ class TransportResponse(TransportBase):
         json_encoders = {ObjectId: str}
 
 # ----- Thing Schemas -----
-class ThingBase(BaseModel):
+class ClothesBase(BaseModel):
     type: str
     name: str
     description: str
     tag: List[str]
+    image_id: Optional[str]
 
-class ThingCreate(ThingBase):
+class ClothesCreate(ClothesBase):
     pass
 
-class ThingResponse(ThingBase):
+class ClothesResponse(ClothesBase):
     id: Optional[PyObjectId] = Field(alias="_id")
 
     class Config:
