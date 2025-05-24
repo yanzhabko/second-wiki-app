@@ -3,12 +3,13 @@ import { useQuery } from "react-query";
 import Card from "../components/ux/card/Card";
 import ViewSessionModal from "../components/modals/view-seans-modal";
 import DynamicCreateModal from "../components/modals/create-seans-modal";
+import DynamicUpdateModal from "../components/modals/update-seans-modal";
 import { useModal } from "../hooks/useModal";
 import { useAuth } from "../providers/AuthProvider";
 import { api } from "../utils/server";
 
 interface ClothesItem {
-  id: string;
+  _id: string;
   type: string;
   name?: string;
   description: string;
@@ -28,11 +29,18 @@ const Accessories = () => {
     data: accessories,
     isLoading,
     isError,
-  } = useQuery<ClothesItem[]>("accessories", () =>
-    api.get("/accessories").then((res) => res.data)
+  } = useQuery<ClothesItem[]>(
+    "accessories",
+    () => api.get("/accessories").then((res) => res.data),
+    {
+      refetchOnWindowFocus: false,
+    }
   );
 
-  console.log(accessories);
+  const selectedItem =
+    activeSession !== null && accessories?.[activeSession]
+      ? accessories[activeSession]
+      : null;
 
   const openModal = (index: number) => {
     setActiveSession(index);
@@ -66,7 +74,7 @@ const Accessories = () => {
         {user?.role === "admin" && (
           <button
             onClick={clothesModal.onOpen}
-            className="mb-4 px-4 py-2 bg-purple-400 text-white font-[500] rounded"
+            className="hover:bg-purple-500 mb-4 px-4 py-2 bg-purple-400 text-white font-[500] rounded"
           >
             Додати аксесуари
           </button>
@@ -78,13 +86,18 @@ const Accessories = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full mb-4 px-3 py-2 border rounded"
         />
-        {/* Кнопки тегів */}
-        <div className="mb-6 flex flex-wrap gap-2">
+        <div
+          className="mb-6 overflow-x-auto whitespace-nowrap gap-2 flex px-1"
+          style={{
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
           <button
             onClick={() => setActiveTag(null)}
-            className={`px-3 py-1 rounded ${
+            className={`inline-block mr-2 px-3 py-1 rounded ${
               activeTag === null
-                ? "bg-purple-400 text-white"
+                ? "bg-purple-400 text-white hover:bg-purple-400 hover:text-white"
                 : "bg-gray-200 text-gray-800"
             }`}
           >
@@ -94,7 +107,7 @@ const Accessories = () => {
             <button
               key={tag}
               onClick={() => setActiveTag(tag)}
-              className={`px-3 py-1 rounded ${
+              className={`inline-block mr-2 px-3 py-1 rounded hover:bg-purple-400 hover:text-white ${
                 activeTag === tag
                   ? "bg-purple-400 text-white"
                   : "bg-gray-200 text-gray-800"
@@ -105,7 +118,7 @@ const Accessories = () => {
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-2 sm:gap-4">
+        <div className="flex flex-wrap -mx-2">
           {filteredAccessories?.length === 0 ? (
             <div className="text-gray-600">Нічого не знайдено</div>
           ) : (
@@ -113,7 +126,7 @@ const Accessories = () => {
               <div
                 key={index}
                 onClick={() => openModal(index)}
-                className="w-full md:w-1/3 lg:w-1/4 cursor-pointer"
+                className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4 cursor-pointer"
               >
                 <Card
                   title={item.name}
@@ -151,13 +164,56 @@ const Accessories = () => {
         ]}
       />
 
-      {activeSession !== null && accessories && (
-        <ViewSessionModal
-          isOpen={isOpen}
-          onOpen={() => setIsOpen(true)}
-          onClose={closeModal}
-          data={accessories[activeSession]}
+      {user?.role === "admin" &&
+      activeSession !== null &&
+      accessories &&
+      accessories[activeSession] ? (
+        <DynamicUpdateModal
+          modal={{ isOpen, onClose: closeModal }}
+          title="Оновити одяг"
+          updateUrl={`/accessories/${selectedItem?._id}`}
+          defaultValues={{
+            type: selectedItem?.type ?? "",
+            name: selectedItem?.name ?? "",
+            description: selectedItem?.description ?? "",
+            tag: selectedItem?.tag ?? [],
+            image_id: selectedItem?.image_id ?? "",
+          }}
+          fields={[
+            { name: "type", label: "Тип", type: "text", required: true },
+            { name: "name", label: "Назва", type: "text" },
+            {
+              name: "description",
+              label: "Опис",
+              type: "textarea",
+              required: true,
+            },
+            {
+              name: "tag",
+              label: "Теги (через кому)",
+              type: "tags",
+              required: true,
+            },
+          ]}
+          withImage={true}
         />
+      ) : (
+        activeSession !== null &&
+        accessories?.[activeSession] && (
+          <ViewSessionModal
+            isOpen={isOpen}
+            onOpen={() => setIsOpen(true)}
+            onClose={closeModal}
+            data={{
+              id: selectedItem?._id ?? "",
+              type: selectedItem?.type ?? "",
+              name: selectedItem?.name ?? "",
+              description: selectedItem?.description ?? "",
+              tag: selectedItem?.tag ?? [],
+              image_id: selectedItem?.image_id ?? "",
+            }}
+          />
+        )
       )}
     </>
   );

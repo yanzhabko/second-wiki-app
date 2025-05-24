@@ -13,7 +13,7 @@ interface CardProps {
 const Card: FC<CardProps> = ({ type, title, imageId, description }) => {
   const { imageUrl } = useImage(imageId);
   return (
-    <div className="w-auto h-full flex flex-col shadow-2xl rounded-md bg-white py-[15px]">
+    <div className="hover:scale-105  w-auto h-full flex flex-col shadow-2xl rounded-md bg-white py-[15px]">
       <img src={imageUrl ?? ""} alt={title || "clothes image"} />
       <span className=" py-[5px] px-[20px] font-bold">
         {type + " " + (title ?? "")}

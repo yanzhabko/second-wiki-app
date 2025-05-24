@@ -4,6 +4,7 @@ import Button from "../Button";
 import Title from "../Title";
 import { navLinks } from "../../../lib";
 import { useAuth } from "../../../providers/AuthProvider";
+import profile from "../../../image/profile.png";
 
 interface LaptopNavProps {
   onClose: () => void;
@@ -39,17 +40,16 @@ const LaptopNav: FC<LaptopNavProps> = ({ onClose, onOpen, isActive }) => {
       {user ? (
         <>
           <div className="relative hidden lg:flex">
-            <Button
-              types="login"
-              tag="div"
-              title={user.username || "Профіль"}
+            <div
+              className="px-2 py-2 cursor-pointer text-center rounded-lg bg-purple-400 hover:bg-purple-500"
               onClick={onOpen}
-              className="z-10"
-            />
+            >
+              <img src={profile} alt="Cabinet" className="w-[30px] h-[30px]" />
+            </div>
             <nav
               className={`${
                 isActive ? "block" : "hidden"
-              } absolute rounded-md top-[110%] left-0 w-full bg-purple-400 flex flex-col z-10`}
+              } absolute rounded-md top-[110%] right-0 bg-purple-400 flex flex-col z-10`}
             >
               <Button
                 types="submenu"

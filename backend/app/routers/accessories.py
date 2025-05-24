@@ -4,6 +4,7 @@ from app.database import db
 from app.routers.auth import get_current_admin
 from app.schemas import ThingResponse
 from app.utils.utils import get_things_list
+from bson import ObjectId
 import gridfs
 
 router = APIRouter(prefix="/accessories", tags=["accessories"])
@@ -13,7 +14,7 @@ fs = gridfs.GridFS(db)
 @router.post("/", response_model=ThingResponse, status_code=status.HTTP_201_CREATED)
 async def create_accessory(
     type: str = Form(...),
-    name: str = Form(...),
+    name: str = Form(None),
     description: str = Form(...),
     tag: List[str] = Form(...),
     image: UploadFile = File(None),
@@ -51,5 +52,51 @@ async def list_accessories():
     try:
         items = get_things_list(db.accessories.find())
         return items
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+@router.put("/{item_id}", response_model=ThingResponse, status_code=status.HTTP_200_OK)
+async def update_accessory(
+    item_id: str,
+    type: str = Form(...),
+    name: str = Form(None),
+    description: str = Form(...),
+    tag: List[str] = Form(...),
+    image: UploadFile = File(None),
+    current: dict = Depends(get_current_admin)
+):
+    try:
+        existing_item = db.accessories.find_one({"_id": ObjectId(item_id)})
+        if not existing_item:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        update_data = {
+            "type": type,
+            "name": name,
+            "description": description,
+            "tag": tag,
+        }
+
+        if image:
+            # Видаляємо старе зображення, якщо є
+            if "image_id" in existing_item and existing_item["image_id"]:
+                fs.delete(existing_item["image_id"])
+
+            image_bytes = await image.read()
+            new_image_id = fs.put(image_bytes, filename=image.filename, content_type=image.content_type)
+            update_data["image_id"] = new_image_id
+        else:
+            # Якщо не оновлюємо зображення, зберігаємо старе
+            if "image_id" in existing_item:
+                update_data["image_id"] = existing_item["image_id"]
+
+        db.accessories.update_one({"_id": ObjectId(item_id)}, {"$set": update_data})
+
+        updated_item = db.accessories.find_one({"_id": ObjectId(item_id)})
+        updated_item["id"] = str(updated_item["_id"])
+        updated_item["image_id"] = str(updated_item.get("image_id")) if updated_item.get("image_id") else None
+
+        return updated_item
+
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

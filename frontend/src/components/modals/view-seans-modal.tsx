@@ -58,17 +58,17 @@ const ViewSessionModal: FC<ViewSessionModalProps> = ({
               {data.type + " " + (data.name ?? "")}
             </DialogTitle>
 
-            <div className="w-full h-[440px] mb-4 rounded-lg overflow-hidden">
+            <div className="w-full min-h-[240px] lg:h-[440px] mb-4 rounded-lg overflow-hidden">
               <img
                 src={imageUrl || ""}
                 alt={data.name}
-                className="w-full h-full object-cover rounded-md"
+                className="w-full h-full object-contain rounded-md"
               />
             </div>
 
             <p className="text-sm text-gray-600 mb-2">{data.description}</p>
 
-            <div className="mt-auto flex gap-1 ">
+            <div className="mt-auto flex flex-wrap gap-1  lg:gap-2 justify-start items-center ">
               {data.tag.map((item, index) => (
                 <span
                   key={index}

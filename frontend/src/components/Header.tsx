@@ -31,8 +31,16 @@ const Header: FC = () => {
           className="flex z-10 relative"
           onClick={handleClickClose}
         >
-          <Title title="Second" type="title" className="!text-purple-300" />
-          <Title title="Life" type="title" className="!text-purple-300" />
+          <Title
+            title="Second"
+            type="title"
+            className="!text-purple-400 !text-[28px]"
+          />
+          <Title
+            title="Life"
+            type="title"
+            className="!text-purple-400 !text-[28px]"
+          />
           <Title
             title={user?.role == "admin" ? "Admin" : "Wiki"}
             type="title"
