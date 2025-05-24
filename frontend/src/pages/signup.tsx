@@ -1,9 +1,9 @@
 import { useAuth } from "../providers/AuthProvider";
 import { useForm } from "react-hook-form";
-import Input from "../components/ux/Input";
-import Error from "../components/error";
 import { Link } from "react-router-dom";
-import Title from "../components/ux/Title";
+import Input from "../components/ui/Input";
+import Error from "../components/ui/error";
+import Title from "../components/ui/Title";
 
 type SingUpType = {
   username: string;

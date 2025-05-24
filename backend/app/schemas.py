@@ -52,6 +52,7 @@ class TransportBase(BaseModel):
     trunk_capacity: str
     description: str
     tag: List[str]
+    image_id: Optional[str]
 
 class TransportCreate(TransportBase):
     pass

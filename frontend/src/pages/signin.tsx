@@ -1,9 +1,9 @@
 import { useAuth } from "../providers/AuthProvider";
 import { useForm } from "react-hook-form";
-import Input from "../components/ux/Input";
-import Error from "../components/error";
-import Title from "../components/ux/Title";
 import { Link } from "react-router-dom";
+import Input from "../components/ui/Input";
+import Error from "../components/ui/error";
+import Title from "../components/ui/Title";
 
 type SingInType = {
   email: string;
@@ -43,12 +43,12 @@ function SingIn() {
           Увійти
         </button>
         <div className="flex gap-1">
-          <Title title="Не пам'ятаєш пароль?" type="text" />
+          <Title title="Не має акаунту?" type="text" />
           <Link
-            to="/recovery"
+            to="/signup"
             className="text-blue-500 font-semibold text-1 hover:text-blue-700"
           >
-            Забули пароль
+            Реєстрація
           </Link>
         </div>
       </form>

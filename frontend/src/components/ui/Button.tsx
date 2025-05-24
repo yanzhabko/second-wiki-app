@@ -1,15 +1,14 @@
 import type { FC } from "react";
 import { Link } from "react-router-dom";
-// import { IconType } from "react-icons";
+import { useState } from "react";
 
 interface ButtonProps {
-  title: string | undefined | null;
+  title?: string | undefined | null;
   className?: string;
   onClick?: (e: unknown) => void;
   tag?: "div" | "button" | "a";
-  types: "login" | "logout" | "link" | "submenu" | "icon";
+  types: "login" | "link" | "submenu" | "copy";
   href?: string;
-  //   Icon?: IconType;
 }
 
 const Button: FC<ButtonProps> = ({
@@ -19,9 +18,18 @@ const Button: FC<ButtonProps> = ({
   tag = "div",
   types,
   href,
-  //   Icon,
 }) => {
   const Tag = tag;
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = () => {
+    if (href) {
+      navigator.clipboard.writeText(href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   const ButtonContext = () => {
     if (types === "login") {
       return (
@@ -55,6 +63,15 @@ const Button: FC<ButtonProps> = ({
             {title}
           </Tag>
         </Link>
+      );
+    } else if (types === "copy") {
+      return (
+        <button
+          onClick={copyToClipboard}
+          className={`${className} p-2 text-white flex  items-center justify-center bg-purple-500  font-medium rounded-md hover:bg-purple-600`}
+        >
+          {copied ? "Скопійовано!" : "Копіювати IP"}
+        </button>
       );
     } else {
       return null;

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import type { FC } from "react";
 import { NavLink } from "react-router-dom";
-import Title from "./ux/Title";
-import Burger from "./ux/header/Burger";
-import LaptopNav from "./ux/header/LaptopNav";
-import { useAuth } from "../providers/AuthProvider";
+import Title from "./Title";
+import Burger from "./header/Burger";
+import LaptopNav from "./header/LaptopNav";
+import { useAuth } from "../../providers/AuthProvider";
 
 const Header: FC = () => {
   const [open, setOpen] = useState(false);

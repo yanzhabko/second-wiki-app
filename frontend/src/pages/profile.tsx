@@ -1,4 +1,4 @@
-import UpdateSection from "../components/ux/profile/UpdateSection";
+import UpdateSection from "../components/ui/profile/UpdateSection";
 
 const Profile = () => {
   return (

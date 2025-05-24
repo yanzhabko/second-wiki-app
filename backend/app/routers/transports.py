@@ -1,24 +1,129 @@
-from fastapi import APIRouter, HTTPException, status
+from bson import ObjectId
+import gridfs
+from fastapi import APIRouter, HTTPException, Depends, status, UploadFile, File, Form
 from typing import List
 from app.database import db
-from app.schemas import TransportCreate, TransportResponse
+from app.routers.auth import get_current_admin
 from app.utils.utils import get_transport_list
+from app.schemas import TransportResponse
 
-router = APIRouter(prefix="/transports", tags=["transports"])
+router = APIRouter(prefix="/transport", tags=["transport"])
+fs = gridfs.GridFS(db)
 
-@router.post("/", response_model=TransportResponse, status_code=status.HTTP_201_CREATED)
-async def create_transport(data: TransportCreate):
+@router.get("/", response_model=List[TransportResponse], status_code=status.HTTP_200_OK)
+async def list_transport():
     try:
-        result = db.transports.insert_one(data.dict())
-        item = db.transports.find_one({"_id": result.inserted_id})
-        return item
+        items = get_transport_list(db.transport.find())
+        return items
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-@router.get("/", response_model=List[TransportResponse])
-async def list_transports():
+
+@router.post("/", response_model=TransportResponse, status_code=status.HTTP_201_CREATED)
+async def create_transport(
+    type: str = Form(...),
+    model: str = Form(...),
+    price: int = Form(None),
+    speed: str = Form(...),
+    forecastle: str = Form(...),
+    trunk_capacity: str = Form(...),
+    description: str = Form(...),
+    tag: List[str] = Form(...),
+    image: UploadFile = File(None),
+    current: dict = Depends(get_current_admin)
+):
     try:
-        items = get_transport_list(db.transports.find())
-        return items
+        image_id = None
+        if image:
+            image_bytes = await image.read()
+            image_id = fs.put(image_bytes, filename=image.filename, content_type=image.content_type)
+        transport_data = {
+            "type": type,
+            "model": model,
+            "price": price,
+            "speed": speed,
+            "forecastle": forecastle,
+            "trunk_capacity": trunk_capacity,
+            "description": description,
+            "tag": tag,
+            "image_id": image_id
+        }
+
+        insert_result = db.transport.insert_one(transport_data)
+        created = db.transport.find_one({"_id": insert_result.inserted_id})
+        if not created:
+            raise HTTPException(status_code=404, detail="Not found after insert")
+
+        created["id"] = str(created["_id"])
+        created["image_id"] = str(created["image_id"]) 
+
+        return created
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+@router.put("/{item_id}", response_model=TransportResponse, status_code=status.HTTP_200_OK)
+async def update_transport(
+    item_id: str,
+    type: str = Form(...),
+    model: str = Form(...),
+    price: int = Form(None),
+    speed: str = Form(...),
+    forecastle: str = Form(...),
+    trunk_capacity: str = Form(...),
+    description: str = Form(...),
+    tag: List[str] = Form(...),
+    image: UploadFile = File(None),
+    current: dict = Depends(get_current_admin)
+):
+    try:
+        existing_item = db.transport.find_one({"_id": ObjectId(item_id)})
+        if not existing_item:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        update_data = {
+            "type": type,
+            "model": model,
+            "price": price,
+            "speed": speed,
+            "forecastle": forecastle,
+            "trunk_capacity": trunk_capacity,
+            "description": description,
+            "tag": tag,
+        }
+
+        if image:
+            if "image_id" in existing_item and existing_item["image_id"]:
+                fs.delete(existing_item["image_id"])
+
+            image_bytes = await image.read()
+            new_image_id = fs.put(image_bytes, filename=image.filename, content_type=image.content_type)
+            update_data["image_id"] = new_image_id
+        else:
+            if "image_id" in existing_item:
+                update_data["image_id"] = existing_item["image_id"]
+
+        db.transport.update_one({"_id": ObjectId(item_id)}, {"$set": update_data})
+
+        updated_item = db.transport.find_one({"_id": ObjectId(item_id)})
+        updated_item["id"] = str(updated_item["_id"])
+        updated_item["image_id"] = str(updated_item.get("image_id")) if updated_item.get("image_id") else None
+
+        return updated_item
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+@router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_transport(item_id: str, current: dict = Depends(get_current_admin)):
+    try:
+        existing_item = db.transport.find_one({"_id": ObjectId(item_id)})
+        if not existing_item:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+        if "image_id" in existing_item and existing_item["image_id"]:
+            fs.delete(existing_item["image_id"])
+
+        db.transport.delete_one({"_id": ObjectId(item_id)})
+
+        return {"message": "Транспорт успішно видалено"}
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

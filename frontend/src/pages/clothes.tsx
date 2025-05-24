@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useQuery } from "react-query";
-import Card from "../components/ux/card/Card";
-import ViewSessionModal from "../components/modals/view-seans-modal";
-import DynamicCreateModal from "../components/modals/create-seans-modal";
 import { useModal } from "../hooks/useModal";
 import { useAuth } from "../providers/AuthProvider";
 import { api } from "../utils/server";
+import Card from "../components/ui/card/Card";
+import ViewSessionModal from "../components/modals/view-seans-modal";
+import DynamicCreateModal from "../components/modals/create-seans-modal";
 import DynamicUpdateModal from "../components/modals/update-seans-modal";
+import DragScroll from "../components/ui/DragScroll";
 
 interface ClothesItem {
   _id: string;
@@ -36,10 +37,13 @@ const Clothes = () => {
       refetchOnWindowFocus: false,
     }
   );
+
   const selectedItem =
     activeSession !== null && clothes?.[activeSession]
       ? clothes[activeSession]
       : null;
+
+  console.log(selectedItem);
 
   const openModal = (id: number) => {
     setActiveSession(id);
@@ -84,13 +88,7 @@ const Clothes = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full mb-4 px-3 py-2 border rounded"
         />
-        <div
-          className="mb-6 overflow-x-auto whitespace-nowrap gap-2 flex px-1"
-          style={{
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          }}
-        >
+        <DragScroll>
           <button
             onClick={() => setActiveTag(null)}
             className={`inline-block mr-2 px-3 py-1 rounded ${
@@ -114,7 +112,7 @@ const Clothes = () => {
               {tag}
             </button>
           ))}
-        </div>
+        </DragScroll>
 
         <div className="flex flex-wrap -mx-2">
           {filteredClothes?.length === 0 ? (
@@ -202,7 +200,7 @@ const Clothes = () => {
             onOpen={() => setIsOpen(true)}
             onClose={closeModal}
             data={{
-              id: selectedItem?._id ?? "",
+              _id: selectedItem?._id ?? "",
               type: selectedItem?.type ?? "",
               name: selectedItem?.name ?? "",
               description: selectedItem?.description ?? "",

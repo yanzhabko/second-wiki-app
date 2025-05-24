@@ -8,6 +8,7 @@ from app.routers.profile import router as profile_router
 from app.routers.image import router as image_router
 
 
+
 app = FastAPI()
 
 app.add_middleware(
@@ -24,7 +25,6 @@ app.include_router(clothes_router)
 app.include_router(accessories_router)
 app.include_router(profile_router)
 app.include_router(image_router)
-
 
 @app.get("/")
 def server():

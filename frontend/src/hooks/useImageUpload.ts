@@ -21,5 +21,5 @@ export const useImageUpload = () => {
     };
   }, [previewUrl]);
 
-  return { file, previewUrl, handleChange, setFile };
+  return { file, previewUrl, handleChange, setFile, setPreviewUrl };
 };
